@@ -4,32 +4,40 @@ package cache
 import (
 	"fmt"
 	"testing"
-	
-	_ "github.com/analias/cache"
 )
 
-type stringIntCache struct {
-	store map[string]int
+type DbConnection struct {
+	server   string
+	port     uint
+	password string
+	scheme   string
 }
 
-type stringStringCache struct {
-	store map[string]string
+var dbConnectionCache Cache
+
+func TestNewCache(t *testing.T) {
+	dbConnectionCache = newCache(DbConnection{port: 1521}, 10, 10*1000)
+
+	fmt.Printf("TestNewCache: dbConnectionCache type: %T\n", dbConnectionCache)
+	fmt.Printf("TestNewCache: dbConnectionCache value: %#v\n", dbConnectionCache)
 }
 
-type location struct {
-	x int
-	y int
-	z int
+func TestStore(t *testing.T) {
+	err := dbConnectionCache.Store("server1", DbConnection{server: "server1", port: 1521, password: "secret", scheme: "test"})
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Printf("TestStore: dbConnectionCache type: %T\n", dbConnectionCache)
+	fmt.Printf("TestStore: dbConnectionCache value: %#v\n", dbConnectionCache)
 }
 
-type locationCache struct {
-	store map[location]string
-}
+func TestFetch(t *testing.T) {
+	server1, err := dbConnectionCache.Fetch("store1")
+	if err != nil {
+		fmt.Println(err)
+	}
 
-func TestTests (t *testing.T) {
-	
-}
-
-func TestIntCache (t *testing.T) {
-	
+	fmt.Printf("TestFetch: server1 type: %T\n", server1)
+	fmt.Printf("TestFetch: server1 value: %#v\n", server1)
 }
